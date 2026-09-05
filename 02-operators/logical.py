@@ -252,7 +252,3 @@ can_access = age >= 18 and not is_banned and has_permission
 
 print("Access granted:", can_access)
 
-
-# ============================================================
-# Mini Challenge
-# ============================================================
