@@ -1,945 +1,1031 @@
 """
 Python Fundamentals
-12 - Modules and Packages
-Topic: Python Standard Library
+13 - File Handling
+Topic: Reading and Writing Files
 
 This file covers:
-- What the Standard Library is
-- os
-- pathlib
-- sys
-- json
-- datetime
-- collections
-- itertools
-- math
-- random
-- statistics
-- functools
+- What file handling is
+- Opening files
+- Reading files
+- Writing files
+- Appending to files
+- File modes
+- Encoding
+- with statement
+- Reading line by line
+- Writing multiple lines
+- pathlib basics
+- Practical file handling examples
 """
 
 
 # ============================================================
-# 1. What Is the Python Standard Library?
+# 1. What Is File Handling?
 # ============================================================
 
 """
-Python comes with a large collection of modules that can be
-used without installing external packages.
+File handling means reading data from files and writing data
+to files.
 
-Examples:
+Python can work with many types of files:
 
-os
-pathlib
-json
-datetime
-collections
-itertools
-math
-random
-statistics
-functools
+- TXT
+- CSV
+- JSON
+- Logs
+- Configuration files
+- Images and binary files
 
-These modules provide functionality for common programming
-tasks.
+In this file we focus mainly on text files.
 """
 
 
 # ============================================================
-# 2. os Module
+# 2. Opening a File
 # ============================================================
-
-import os
-
-
-print(os.getcwd())
-
 
 """
-os.getcwd()
-    Returns the current working directory.
-"""
+The open() function is used to open a file.
 
+Basic syntax:
 
-# ============================================================
-# 3. Environment Variables
-# ============================================================
-
-username = os.getenv("USER")
-
-print(username)
-
-
-"""
-Environment variables are values provided by the operating
-system or execution environment.
-
-os.getenv() returns None if the variable does not exist.
-"""
-
-
-# ============================================================
-# 4. Checking an Environment Variable
-# ============================================================
-
-debug_mode = os.getenv("DEBUG")
-
-if debug_mode:
-    print("Debug mode is enabled.")
-else:
-    print("Debug mode is disabled.")
-
-
-"""
-Environment variables are commonly used for configuration
-in backend applications.
-"""
-
-
-# ============================================================
-# 5. pathlib
-# ============================================================
-
-from pathlib import Path
-
-
-current_directory = Path.cwd()
-
-print(current_directory)
-
-
-"""
-pathlib provides an object-oriented way to work with
-filesystem paths.
-"""
-
-
-# ============================================================
-# 6. Creating Paths
-# ============================================================
-
-from pathlib import Path
-
-
-project_path = Path("projects")
-
-file_path = project_path / "python" / "main.py"
-
-print(file_path)
-
-
-"""
-The / operator can be used with Path objects to build paths.
-
-This is preferred over manually concatenating strings.
-"""
-
-
-# ============================================================
-# 7. Checking Files and Directories
-# ============================================================
-
-path = Path("example.txt")
-
-print(path.exists())
-print(path.is_file())
-print(path.is_dir())
-
-
-# ============================================================
-# 8. Creating a Directory
-# ============================================================
-
-folder = Path("example_folder")
-
-folder.mkdir(
-    exist_ok=True
+open(
+    filename,
+    mode
 )
 
-print(folder.exists())
+Example:
 
+file = open("example.txt", "r")
 
-"""
-exist_ok=True prevents an error if the directory
-already exists.
+Always remember to close a file when you are finished
+with it.
 """
 
 
 # ============================================================
-# 9. Reading and Writing Text Files
+# 3. Reading a File
 # ============================================================
 
-file_path = Path("example.txt")
-
-file_path.write_text(
-    "Hello from Python!",
+file = open(
+    "example.txt",
+    "r",
     encoding="utf-8"
 )
 
-content = file_path.read_text(
-    encoding="utf-8"
-)
+content = file.read()
 
 print(content)
 
-
-"""
-pathlib can handle basic file operations directly.
-"""
-
-
-# ============================================================
-# 10. Listing Directory Contents
-# ============================================================
-
-current_directory = Path.cwd()
-
-for item in current_directory.iterdir():
-    print(item)
+file.close()
 
 
 """
-iterdir() returns the items inside a directory.
+read() reads the entire file as a string.
 """
 
 
 # ============================================================
-# 11. Finding Python Files
+# 4. Writing a File
 # ============================================================
 
-current_directory = Path.cwd()
-
-for file in current_directory.glob("*.py"):
-    print(file)
-
-
-"""
-glob() can find files matching a pattern.
-"""
-
-
-# ============================================================
-# 12. JSON
-# ============================================================
-
-import json
-
-
-user = {
-    "name": "Mohsen",
-    "age": 24,
-    "skills": [
-        "Python",
-        "SQL",
-        "Django"
-    ]
-}
-
-json_data = json.dumps(user)
-
-print(json_data)
-
-
-"""
-json.dumps()
-    Converts a Python object into a JSON string.
-"""
-
-
-# ============================================================
-# 13. JSON Formatting
-# ============================================================
-
-json_data = json.dumps(
-    user,
-    indent=4
-)
-
-print(json_data)
-
-
-"""
-indent makes JSON easier to read.
-"""
-
-
-# ============================================================
-# 14. JSON String to Python Object
-# ============================================================
-
-json_text = """
-{
-    "name": "Mohsen",
-    "age": 24,
-    "role": "Backend Developer"
-}
-"""
-
-user = json.loads(json_text)
-
-print(user)
-print(user["name"])
-
-
-"""
-json.loads()
-    Converts a JSON string into a Python object.
-"""
-
-
-# ============================================================
-# 15. Writing JSON to a File
-# ============================================================
-
-data = {
-    "name": "Mohsen",
-    "skills": [
-        "Python",
-        "Django"
-    ]
-}
-
-with open(
-    "user.json",
+file = open(
+    "output.txt",
     "w",
     encoding="utf-8"
-) as file:
+)
 
-    json.dump(
-        data,
-        file,
-        indent=4
-    )
+file.write("Hello, Python!")
+
+file.close()
+
+
+"""
+w means write mode.
+
+Important:
+
+If the file already exists, write mode replaces
+its existing content.
+"""
 
 
 # ============================================================
-# 16. Reading JSON from a File
+# 5. Writing Multiple Lines
+# ============================================================
+
+file = open(
+    "users.txt",
+    "w",
+    encoding="utf-8"
+)
+
+file.write("Mohsen\n")
+file.write("Ali\n")
+file.write("Sara\n")
+
+file.close()
+
+
+# ============================================================
+# 6. Appending to a File
+# ============================================================
+
+file = open(
+    "users.txt",
+    "a",
+    encoding="utf-8"
+)
+
+file.write("Reza\n")
+
+file.close()
+
+
+"""
+a means append mode.
+
+Existing content remains unchanged and new content
+is added to the end of the file.
+"""
+
+
+# ============================================================
+# 7. File Modes
+# ============================================================
+
+"""
+Common file modes:
+
+r
+    Read
+
+w
+    Write and replace existing content
+
+a
+    Append
+
+x
+    Create a new file
+
+r+
+    Read and write
+
+w+
+    Write and read, replacing existing content
+
+a+
+    Append and read
+
+b
+    Binary mode
+"""
+
+
+# ============================================================
+# 8. Reading a Specific Number of Characters
+# ============================================================
+
+file = open(
+    "example.txt",
+    "r",
+    encoding="utf-8"
+)
+
+content = file.read(10)
+
+print(content)
+
+file.close()
+
+
+"""
+read(10) reads up to 10 characters.
+"""
+
+
+# ============================================================
+# 9. readline()
+# ============================================================
+
+file = open(
+    "users.txt",
+    "r",
+    encoding="utf-8"
+)
+
+first_line = file.readline()
+
+print(first_line)
+
+file.close()
+
+
+"""
+readline() reads one line at a time.
+"""
+
+
+# ============================================================
+# 10. Reading Multiple Lines
+# ============================================================
+
+file = open(
+    "users.txt",
+    "r",
+    encoding="utf-8"
+)
+
+first_line = file.readline()
+second_line = file.readline()
+
+print(first_line)
+print(second_line)
+
+file.close()
+
+
+# ============================================================
+# 11. readlines()
+# ============================================================
+
+file = open(
+    "users.txt",
+    "r",
+    encoding="utf-8"
+)
+
+lines = file.readlines()
+
+print(lines)
+
+file.close()
+
+
+"""
+readlines() returns a list containing the lines.
+"""
+
+
+# ============================================================
+# 12. Iterating Over a File
+# ============================================================
+
+file = open(
+    "users.txt",
+    "r",
+    encoding="utf-8"
+)
+
+for line in file:
+    print(line.strip())
+
+file.close()
+
+
+"""
+Iterating directly over a file is useful when processing
+large files line by line.
+"""
+
+
+# ============================================================
+# 13. Why strip() Is Often Used
+# ============================================================
+
+file = open(
+    "users.txt",
+    "r",
+    encoding="utf-8"
+)
+
+for line in file:
+    print(line.strip())
+
+file.close()
+
+
+"""
+Lines read from a text file often contain a newline character:
+
+"User 1\n"
+
+strip() removes surrounding whitespace,
+including the newline.
+"""
+
+
+# ============================================================
+# 14. Using with
 # ============================================================
 
 with open(
-    "user.json",
+    "example.txt",
     "r",
     encoding="utf-8"
 ) as file:
 
-    data = json.load(file)
+    content = file.read()
 
-
-print(data)
+    print(content)
 
 
 """
-json.dump()
-    Python object -> file
+with automatically closes the file when the block finishes.
 
-json.load()
-    file -> Python object
+This is the recommended approach for normal file handling.
 """
 
 
 # ============================================================
-# 17. datetime
+# 15. Writing with with
+# ============================================================
+
+with open(
+    "message.txt",
+    "w",
+    encoding="utf-8"
+) as file:
+
+    file.write(
+        "Welcome to Python!"
+    )
+
+
+# ============================================================
+# 16. Appending with with
+# ============================================================
+
+with open(
+    "message.txt",
+    "a",
+    encoding="utf-8"
+) as file:
+
+    file.write(
+        "\nThis line was appended."
+    )
+
+
+# ============================================================
+# 17. Writing Multiple Lines
+# ============================================================
+
+users = [
+    "Mohsen",
+    "Ali",
+    "Sara",
+    "Reza"
+]
+
+with open(
+    "users.txt",
+    "w",
+    encoding="utf-8"
+) as file:
+
+    for user in users:
+        file.write(
+            user + "\n"
+        )
+
+
+# ============================================================
+# 18. writelines()
+# ============================================================
+
+lines = [
+    "Python\n",
+    "Django\n",
+    "SQL\n",
+    "PostgreSQL\n"
+]
+
+with open(
+    "skills.txt",
+    "w",
+    encoding="utf-8"
+) as file:
+
+    file.writelines(lines)
+
+
+"""
+writelines() writes multiple strings.
+
+Important:
+
+writelines() does not automatically add newline characters.
+
+Therefore the strings above explicitly contain \n.
+"""
+
+
+# ============================================================
+# 19. Checking Whether a File Exists
+# ============================================================
+
+from pathlib import Path
+
+
+file_path = Path("example.txt")
+
+if file_path.exists():
+    print("File exists.")
+else:
+    print("File does not exist.")
+
+
+# ============================================================
+# 20. Checking Whether a Path Is a File
+# ============================================================
+
+path = Path("example.txt")
+
+if path.is_file():
+    print("This is a file.")
+
+
+# ============================================================
+# 21. Checking Whether a Path Is a Directory
+# ============================================================
+
+path = Path(".")
+
+if path.is_dir():
+    print("This is a directory.")
+
+
+# ============================================================
+# 22. Reading with pathlib
+# ============================================================
+
+from pathlib import Path
+
+
+file_path = Path("example.txt")
+
+if file_path.exists():
+    content = file_path.read_text(
+        encoding="utf-8"
+    )
+
+    print(content)
+
+
+"""
+pathlib provides a convenient alternative for simple
+text file operations.
+"""
+
+
+# ============================================================
+# 23. Writing with pathlib
+# ============================================================
+
+from pathlib import Path
+
+
+file_path = Path("notes.txt")
+
+file_path.write_text(
+    "Python file handling.",
+    encoding="utf-8"
+)
+
+
+# ============================================================
+# 24. Encoding
+# ============================================================
+
+"""
+Encoding determines how text is represented as bytes.
+
+For modern applications, UTF-8 is a common choice.
+
+Example:
+
+open(
+    "file.txt",
+    "r",
+    encoding="utf-8"
+)
+"""
+
+
+# ============================================================
+# 25. Working with Persian Text
+# ============================================================
+
+with open(
+    "persian.txt",
+    "w",
+    encoding="utf-8"
+) as file:
+
+    file.write(
+        "سلام، پایتون!"
+    )
+
+
+with open(
+    "persian.txt",
+    "r",
+    encoding="utf-8"
+) as file:
+
+    content = file.read()
+
+    print(content)
+
+
+"""
+Using UTF-8 allows Python to correctly handle
+many languages and character sets.
+"""
+
+
+# ============================================================
+# 26. File Position
+# ============================================================
+
+with open(
+    "example.txt",
+    "r",
+    encoding="utf-8"
+) as file:
+
+    print(file.tell())
+
+    content = file.read(5)
+
+    print(content)
+
+    print(file.tell())
+
+
+"""
+tell() returns the current position in the file.
+"""
+
+
+# ============================================================
+# 27. seek()
+# ============================================================
+
+with open(
+    "example.txt",
+    "r",
+    encoding="utf-8"
+) as file:
+
+    file.seek(0)
+
+    content = file.read()
+
+    print(content)
+
+
+"""
+seek() moves the file position.
+
+seek(0)
+
+moves the position back to the beginning.
+"""
+
+
+# ============================================================
+# 28. Reading After seek()
+# ============================================================
+
+with open(
+    "example.txt",
+    "r",
+    encoding="utf-8"
+) as file:
+
+    first_part = file.read(5)
+
+    print(first_part)
+
+    file.seek(0)
+
+    complete_content = file.read()
+
+    print(complete_content)
+
+
+# ============================================================
+# 29. FileNotFoundError
+# ============================================================
+
+try:
+
+    with open(
+        "missing.txt",
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        content = file.read()
+
+except FileNotFoundError:
+
+    print("File was not found.")
+
+
+"""
+Trying to open a non-existing file in read mode
+raises FileNotFoundError.
+"""
+
+
+# ============================================================
+# 30. PermissionError
+# ============================================================
+
+"""
+A file operation can also fail because the program
+does not have enough permissions.
+
+Example:
+
+try:
+    with open(
+        "protected.txt",
+        "r",
+        encoding="utf-8"
+    ) as file:
+        content = file.read()
+
+except PermissionError:
+    print("Permission denied.")
+"""
+
+
+# ============================================================
+# 31. Practical Example: Save User Information
+# ============================================================
+
+name = "Mohsen"
+age = 24
+role = "Backend Developer"
+
+with open(
+    "user.txt",
+    "w",
+    encoding="utf-8"
+) as file:
+
+    file.write(
+        f"Name: {name}\n"
+    )
+
+    file.write(
+        f"Age: {age}\n"
+    )
+
+    file.write(
+        f"Role: {role}\n"
+    )
+
+
+# ============================================================
+# 32. Practical Example: Read User Information
+# ============================================================
+
+try:
+
+    with open(
+        "user.txt",
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        for line in file:
+            print(line.strip())
+
+except FileNotFoundError:
+
+    print("User file does not exist.")
+
+
+# ============================================================
+# 33. Practical Example: Simple Log File
 # ============================================================
 
 from datetime import datetime
 
 
-now = datetime.now()
+message = "User logged in"
 
-print(now)
+timestamp = datetime.now()
 
-
-# ============================================================
-# 18. Formatting Dates
-# ============================================================
-
-formatted_date = now.strftime(
-    "%Y-%m-%d %H:%M:%S"
-)
-
-print(formatted_date)
-
-
-"""
-strftime() converts a datetime object into a formatted string.
-"""
-
-
-# ============================================================
-# 19. Parsing Dates
-# ============================================================
-
-date_text = "2026-09-28"
-
-parsed_date = datetime.strptime(
-    date_text,
-    "%Y-%m-%d"
-)
-
-print(parsed_date)
-
-
-"""
-strptime() converts a formatted string into a datetime object.
-"""
-
-
-# ============================================================
-# 20. timedelta
-# ============================================================
-
-from datetime import timedelta
-
-
-today = datetime.now()
-
-tomorrow = today + timedelta(days=1)
-
-next_week = today + timedelta(days=7)
-
-print(today)
-print(tomorrow)
-print(next_week)
-
-
-# ============================================================
-# 21. Comparing Dates
-# ============================================================
-
-date1 = datetime(2026, 9, 1)
-date2 = datetime(2026, 10, 1)
-
-print(date1 < date2)
-
-
-# ============================================================
-# 22. collections.Counter
-# ============================================================
-
-from collections import Counter
-
-
-letters = [
+with open(
+    "application.log",
     "a",
-    "b",
-    "a",
-    "c",
-    "b",
-    "a"
-]
-
-counter = Counter(letters)
-
-print(counter)
-
-
-"""
-Counter counts how many times each value occurs.
-"""
-
-
-# ============================================================
-# 23. Counter.most_common
-# ============================================================
-
-print(counter.most_common(2))
-
-
-"""
-Returns the most common elements.
-"""
-
-
-# ============================================================
-# 24. defaultdict
-# ============================================================
-
-from collections import defaultdict
-
-
-scores = defaultdict(list)
-
-scores["Mohsen"].append(90)
-scores["Mohsen"].append(85)
-scores["Ali"].append(75)
-
-print(scores)
-
-
-"""
-defaultdict automatically creates a default value
-when a missing key is accessed.
-"""
-
-
-# ============================================================
-# 25. namedtuple
-# ============================================================
-
-from collections import namedtuple
-
-
-User = namedtuple(
-    "User",
-    ["name", "age"]
-)
-
-user = User(
-    "Mohsen",
-    24
-)
-
-print(user.name)
-print(user.age)
-
-
-"""
-namedtuple creates tuple-like objects with named fields.
-"""
-
-
-# ============================================================
-# 26. deque
-# ============================================================
-
-from collections import deque
-
-
-queue = deque()
-
-queue.append("User 1")
-queue.append("User 2")
-queue.append("User 3")
-
-print(queue)
-
-first_user = queue.popleft()
-
-print(first_user)
-print(queue)
-
-
-"""
-deque is useful for efficient insertion and removal
-from both ends.
-"""
-
-
-# ============================================================
-# 27. itertools.count
-# ============================================================
-
-from itertools import count
-
-
-counter = count(start=1)
-
-print(next(counter))
-print(next(counter))
-print(next(counter))
-
-
-"""
-count() creates an iterator that generates values
-indefinitely.
-"""
-
-
-# ============================================================
-# 28. itertools.chain
-# ============================================================
-
-from itertools import chain
-
-
-first = [1, 2, 3]
-second = [4, 5, 6]
-
-for number in chain(first, second):
-    print(number)
-
-
-"""
-chain() combines multiple iterables into one iterator.
-"""
-
-
-# ============================================================
-# 29. itertools.combinations
-# ============================================================
-
-from itertools import combinations
-
-
-items = ["A", "B", "C"]
-
-pairs = combinations(
-    items,
-    2
-)
-
-for pair in pairs:
-    print(pair)
-
-
-"""
-combinations() generates possible combinations
-without repetition of positions.
-"""
-
-
-# ============================================================
-# 30. math
-# ============================================================
-
-import math
-
-
-print(math.sqrt(25))
-print(math.ceil(4.2))
-print(math.floor(4.8))
-print(math.factorial(5))
-
-
-# ============================================================
-# 31. math Constants
-# ============================================================
-
-print(math.pi)
-print(math.e)
-
-
-# ============================================================
-# 32. random
-# ============================================================
-
-import random
-
-
-print(random.randint(1, 100))
-
-print(
-    random.choice([
-        "Python",
-        "Django",
-        "Kotlin",
-        "SQL"
-    ])
-)
-
-
-# ============================================================
-# 33. Shuffling
-# ============================================================
-
-numbers = [1, 2, 3, 4, 5]
-
-random.shuffle(numbers)
-
-print(numbers)
-
-
-"""
-shuffle() changes the list in place.
-"""
-
-
-# ============================================================
-# 34. statistics
-# ============================================================
-
-import statistics
-
-
-numbers = [
-    10,
-    20,
-    30,
-    40,
-    50
-]
-
-print(statistics.mean(numbers))
-print(statistics.median(numbers))
-
-
-# ============================================================
-# 35. functools.reduce
-# ============================================================
-
-from functools import reduce
-
-
-numbers = [1, 2, 3, 4]
-
-total = reduce(
-    lambda a, b: a + b,
-    numbers
-)
-
-print(total)
-
-
-"""
-reduce() repeatedly applies a function to values
-in an iterable.
-
-For simple summation, sum() is usually clearer.
-
-The purpose here is to understand the tool,
-not to replace simpler built-in functions.
-"""
-
-
-# ============================================================
-# 36. functools.lru_cache
-# ============================================================
-
-from functools import lru_cache
-
-
-@lru_cache
-def fibonacci(n):
-    if n <= 1:
-        return n
-
-    return (
-        fibonacci(n - 1)
-        + fibonacci(n - 2)
-    )
-
-
-print(fibonacci(10))
-
-
-"""
-lru_cache stores previous results so repeated calls
-can be much faster for suitable functions.
-"""
-
-
-# ============================================================
-# 37. sys
-# ============================================================
-
-import sys
-
-
-print(sys.version)
-print(sys.platform)
-
-
-# ============================================================
-# 38. Command-Line Arguments
-# ============================================================
-
-"""
-sys.argv contains command-line arguments.
-
-For example:
-
-python main.py hello
-
-would make:
-
-sys.argv[0] -> "main.py"
-sys.argv[1] -> "hello"
-
-Example code:
-
-if len(sys.argv) > 1:
-    print(sys.argv[1])
-"""
-
-
-# ============================================================
-# 39. Combining Standard Library Tools
-# ============================================================
-
-from pathlib import Path
-import json
-
-
-data = {
-    "project": "Python Fundamentals",
-    "language": "Python",
-    "status": "learning"
-}
-
-file_path = Path("project.json")
-
-file_path.write_text(
-    json.dumps(
-        data,
-        indent=4
-    ),
     encoding="utf-8"
-)
+) as file:
 
-loaded_data = json.loads(
-    file_path.read_text(
-        encoding="utf-8"
+    file.write(
+        f"{timestamp} - {message}\n"
     )
-)
-
-print(loaded_data)
 
 
 """
-This example combines:
-
-pathlib
-+
-json
-
-to store structured data in a file.
+Append mode is useful for log files because we usually
+don't want to delete previous log entries.
 """
 
 
 # ============================================================
-# 40. Useful Standard Library Categories
+# 34. Practical Example: Search in a File
 # ============================================================
 
-"""
-Files and operating system:
+keyword = "Python"
 
-os
-pathlib
-shutil
+try:
 
-Data formats:
+    with open(
+        "skills.txt",
+        "r",
+        encoding="utf-8"
+    ) as file:
 
-json
-csv
-configparser
+        for line in file:
 
-Dates and time:
+            if keyword.lower() in line.lower():
+                print(
+                    f"Found: {line.strip()}"
+                )
 
-datetime
-time
-zoneinfo
+except FileNotFoundError:
 
-Collections:
-
-collections
-
-Iteration:
-
-itertools
-
-Mathematics:
-
-math
-statistics
-decimal
-
-Functional programming:
-
-functools
-
-System:
-
-sys
-argparse
-subprocess
-
-Random data:
-
-random
-secrets
-
-Regular expressions:
-
-re
-
-Testing:
-
-unittest
-
-Logging:
-
-logging
-"""
+    print("Skills file not found.")
 
 
 # ============================================================
-# 41. Standard Library vs External Packages
+# 35. Practical Example: Count Lines
 # ============================================================
 
-"""
-Standard Library:
+try:
 
-    import json
-    import pathlib
-    import datetime
+    with open(
+        "users.txt",
+        "r",
+        encoding="utf-8"
+    ) as file:
 
+        line_count = 0
 
-These are included with Python.
+        for line in file:
+            line_count += 1
 
-External packages:
+        print(
+            f"Number of lines: {line_count}"
+        )
 
-    Django
-    requests
-    pandas
+except FileNotFoundError:
 
-These normally need to be installed separately.
-
-For example:
-
-pip install django
-"""
+    print("Users file not found.")
 
 
 # ============================================================
-# 42. Why Standard Library Matters
+# 36. Practical Example: Count Non-Empty Lines
+# ============================================================
+
+try:
+
+    with open(
+        "users.txt",
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        count = 0
+
+        for line in file:
+
+            if line.strip():
+                count += 1
+
+        print(
+            f"Non-empty lines: {count}"
+        )
+
+except FileNotFoundError:
+
+    print("Users file not found.")
+
+
+# ============================================================
+# 37. Practical Example: Copy Text Content
+# ============================================================
+
+source = "source.txt"
+destination = "destination.txt"
+
+try:
+
+    with open(
+        source,
+        "r",
+        encoding="utf-8"
+    ) as source_file:
+
+        content = source_file.read()
+
+    with open(
+        destination,
+        "w",
+        encoding="utf-8"
+    ) as destination_file:
+
+        destination_file.write(content)
+
+    print("File copied successfully.")
+
+except FileNotFoundError:
+
+    print("Source file was not found.")
+
+
+# ============================================================
+# 38. Practical Example: Process File Line by Line
+# ============================================================
+
+try:
+
+    with open(
+        "users.txt",
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        for line_number, line in enumerate(
+            file,
+            start=1
+        ):
+
+            username = line.strip()
+
+            if username:
+                print(
+                    f"{line_number}: {username}"
+                )
+
+except FileNotFoundError:
+
+    print("Users file not found.")
+
+
+# ============================================================
+# 39. File Mode Summary
 # ============================================================
 
 """
-Before installing an external package, check whether
-Python's Standard Library already provides what you need.
+Mode:
 
-Using the Standard Library can:
+r
+    Read existing file.
 
-- reduce dependencies
-- simplify deployment
-- reduce project complexity
-- improve portability
-"""
+w
+    Write and replace existing content.
 
+a
+    Append to the end.
 
-# ============================================================
-# 43. Standard Library in Backend Development
-# ============================================================
+x
+    Create a new file.
+    Fails if the file already exists.
 
-"""
-Even when working with Django, Standard Library modules
-remain useful.
+r+
+    Read and write.
+
+w+
+    Write and read.
+    Existing content is replaced.
+
+a+
+    Append and read.
+
+b
+    Binary mode.
 
 Examples:
 
-pathlib
-    File and path handling.
+rb
+    Read binary.
 
-json
-    JSON data.
+wb
+    Write binary.
+"""
 
-datetime
-    Dates and timestamps.
 
-logging
-    Application logs.
+# ============================================================
+# 40. Text vs Binary Files
+# ============================================================
 
-os
-    Environment variables.
+"""
+Text files:
 
-re
-    Pattern matching.
+- .txt
+- .csv
+- .json
+- .log
 
-collections
-    Useful data structures.
+Usually handled using:
 
-functools
-    Caching and functional utilities.
+encoding="utf-8"
+
+
+Binary files:
+
+- images
+- videos
+- audio
+- executable files
+
+Use binary mode:
+
+rb
+wb
+
+
+Example:
+
+with open(
+    "image.jpg",
+    "rb"
+) as file:
+
+    data = file.read()
+"""
+
+
+# ============================================================
+# 41. Why with Is Recommended
+# ============================================================
+
+"""
+Instead of:
+
+file = open(...)
+content = file.read()
+file.close()
+
+
+Prefer:
+
+with open(...) as file:
+    content = file.read()
+
+
+The with statement makes resource management safer
+and ensures the file is closed after the block.
+"""
+
+
+# ============================================================
+# 42. Avoid Reading Huge Files at Once
+# ============================================================
+
+"""
+For a small file:
+
+content = file.read()
+
+is usually fine.
+
+For a very large file, prefer:
+
+for line in file:
+    process(line)
+
+This avoids loading the entire file into memory at once.
+"""
+
+
+# ============================================================
+# 43. File Handling in Backend Development
+# ============================================================
+
+"""
+File handling is useful for:
+
+- application logs
+- configuration files
+- reports
+- imports and exports
+- uploaded files
+- data processing
+- temporary files
+- backups
+
+Backend applications often need to work with files
+even when the main data is stored in a database.
 """
 
 
@@ -950,16 +1036,16 @@ functools
 """
 Best practices:
 
-1. Learn the most useful Standard Library modules.
-2. Prefer built-in functionality when it solves the problem.
-3. Don't use a complex module when a simple built-in works.
-4. Keep imports organized.
-5. Use pathlib for modern path handling.
-6. Use environment variables for configuration.
-7. Use json for structured JSON data.
-8. Use datetime for date/time operations.
-9. Use collections when specialized data structures help.
-10. Understand a module before adding it to a project.
+1. Prefer the with statement.
+2. Specify encoding for text files.
+3. Use UTF-8 for general text data.
+4. Handle FileNotFoundError when appropriate.
+5. Use append mode for logs.
+6. Be careful with write mode because it replaces content.
+7. Process large files line by line.
+8. Use pathlib for modern path handling.
+9. Use binary mode for binary files.
+10. Keep file operations small and focused.
 """
 
 
@@ -968,46 +1054,41 @@ Best practices:
 # ============================================================
 
 """
-The Python Standard Library provides ready-to-use tools
-for many common programming tasks.
+Important concepts:
 
-Important modules covered here:
+open()
+    Opens a file.
 
-os
-    Operating system and environment variables.
+read()
+    Reads content.
+
+readline()
+    Reads one line.
+
+readlines()
+    Reads lines into a list.
+
+write()
+    Writes content.
+
+writelines()
+    Writes multiple strings.
+
+with
+    Safely manages the file resource.
+
+seek()
+    Moves the file position.
+
+tell()
+    Returns the current file position.
 
 pathlib
-    Filesystem paths and file operations.
-
-json
-    JSON encoding and decoding.
-
-datetime
-    Dates and times.
-
-collections
-    Specialized data structures.
-
-itertools
-    Iterator utilities.
-
-math
-    Mathematical operations.
-
-random
-    Random values and selections.
-
-statistics
-    Statistical calculations.
-
-functools
-    Higher-order functions and caching.
-
-sys
-    Python runtime and command-line information.
+    Provides convenient filesystem operations.
 
 The main idea:
 
-Before installing an external package,
-know what Python already provides.
+Open the file,
+perform the required operation,
+and let with safely handle closing it.
 """
